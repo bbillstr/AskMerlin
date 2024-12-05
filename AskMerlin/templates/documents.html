@@ -1,0 +1,161 @@
+{% extends "index.html" %}
+{% set active_page = 'documents' %}
+
+{% block content %}
+<div class="documents-page">
+    <div class="documents-header">
+        <h1><i class="fas fa-folder"></i> Document Management</h1>
+        <button class="primary-btn" onclick="showUploadModal()">
+            <i class="fas fa-plus"></i>
+            Upload Document
+        </button>
+    </div>
+
+    <div class="documents-grid">
+        <!-- Document cards will be displayed here -->
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cloud-upload-alt"></i> Upload Document</h2>
+                <button class="close-btn" onclick="closeUploadModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-tabs">
+                    <button class="tab-btn active" data-tab="file">File Upload</button>
+                    <button class="tab-btn" data-tab="text">Text Input</button>
+                </div>
+                
+                <div class="upload-form" id="fileUpload">
+                    <div class="file-drop-zone">
+                        <input type="file" id="documentFile" accept=".txt,.doc,.docx,.xlsx,.xls,.pdf" hidden>
+                        <div class="drop-zone-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop your file here or</p>
+                            <button class="secondary-btn" onclick="document.getElementById('documentFile').click()">
+                                Browse Files
+                            </button>
+                        </div>
+                        <div class="file-info" style="display: none;">
+                            <i class="fas fa-file-alt"></i>
+                            <span id="fileName">No file chosen</span>
+                            <button class="icon-btn" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="upload-form" id="textUpload" style="display: none;">
+                    <textarea id="documentText" 
+                            placeholder="Paste your document text here..."
+                            rows="10"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="documentTitle">Document Title</label>
+                    <input type="text" id="documentTitle" placeholder="Enter a title for your document">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeUploadModal()">Cancel</button>
+                <button class="primary-btn" onclick="uploadDocument()">
+                    <i class="fas fa-upload"></i>
+                    Upload
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all tabs
+            tabBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Show corresponding upload form
+            const tabId = this.dataset.tab;
+            document.getElementById('fileUpload').style.display = tabId === 'file' ? 'block' : 'none';
+            document.getElementById('textUpload').style.display = tabId === 'text' ? 'block' : 'none';
+        });
+    });
+
+    // File drop zone
+    const dropZone = document.querySelector('.file-drop-zone');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('drag-highlight');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('drag-highlight');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const file = dt.files[0];
+        handleFile(file);
+    }
+
+    // File input change
+    document.getElementById('documentFile').addEventListener('change', function(e) {
+        if (this.files[0]) {
+            handleFile(this.files[0]);
+        }
+    });
+});
+
+function handleFile(file) {
+    const fileInfo = document.querySelector('.file-info');
+    const dropZoneContent = document.querySelector('.drop-zone-content');
+    const fileName = document.getElementById('fileName');
+    
+    if (file) {
+        fileName.textContent = file.name;
+        fileInfo.style.display = 'flex';
+        dropZoneContent.style.display = 'none';
+    }
+}
+
+function removeFile() {
+    const fileInput = document.getElementById('documentFile');
+    const fileInfo = document.querySelector('.file-info');
+    const dropZoneContent = document.querySelector('.drop-zone-content');
+    
+    fileInput.value = '';
+    fileInfo.style.display = 'none';
+    dropZoneContent.style.display = 'flex';
+}
+</script>
+{% endblock %} 

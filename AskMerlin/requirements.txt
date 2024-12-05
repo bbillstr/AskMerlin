@@ -1,0 +1,6 @@
+flask
+google-generativeai
+werkzeug
+tiktoken==0.5.1
+scikit-learn
+numpy 

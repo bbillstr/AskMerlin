@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AskMerlin - Security Knowledge Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+</head>
+<body>
+    {% block nav_header %}
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-hat-wizard"></i>
+                <span>AskMerlin</span>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('chat') }}" class="nav-link {% if active_page == 'chat' %}active{% endif %}">
+                    <i class="fas fa-comments"></i>
+                    Chat
+                </a>
+                <a href="{{ url_for('documents') }}" class="nav-link {% if active_page == 'documents' %}active{% endif %}">
+                    <i class="fas fa-folder"></i>
+                    Documents
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <!-- Main Content -->
+    <main class="main-container {% if active_page == 'landing' %}landing-container{% endif %}">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+
+    <!-- Add this before the closing body tag -->
+    <div id="processingOverlay" class="processing-overlay">
+        <div class="processing-content">
+            <div class="spinner"></div>
+            <div class="processing-text">Processing...</div>
+            <div id="processingStatus" class="processing-status"></div>
+        </div>
+    </div>
+</body>
+</html> 
